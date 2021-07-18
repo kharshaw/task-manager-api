@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { User } from 'src/auth/user.entity';
 import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
@@ -9,13 +10,14 @@ import { Task } from './task.entity';
 export class TasksRepository extends Repository<Task> {
   private readonly logger = new Logger(TasksRepository.name);
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     const { title, description } = createTaskDto;
 
     const task = this.create({
       title: title,
       description: description,
       status: TaskStatus.OPEN,
+      user,
     });
 
     await this.save(task);
@@ -23,12 +25,13 @@ export class TasksRepository extends Repository<Task> {
     return task;
   }
 
-  async getTasks(filterDto?: GetTasksFilterDto): Promise<Task[]> {
+  async getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
     this.logger.log('getTasks');
 
     const { status, search } = filterDto;
 
-    let query: SelectQueryBuilder<Task> = this.createQueryBuilder('todos');
+    // eslint-disable-next-line prettier/prettier
+    let query: SelectQueryBuilder<Task> = this.createQueryBuilder('todos').where({ user });
 
     if (status) {
       query = query.andWhere('todos.status = :status', {
