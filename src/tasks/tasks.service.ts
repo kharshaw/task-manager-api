@@ -19,7 +19,7 @@ export class TasksService {
     filterDto: GetTasksFilterDto,
     user: User,
   ): Promise<Task[]> {
-    this.logger.log('SERVICE getTasksWithFilter');
+    this.logger.debug('SERVICE getTasksWithFilter');
 
     const tasks = await this.tasksRepository.getTasks(filterDto, user);
     return tasks;

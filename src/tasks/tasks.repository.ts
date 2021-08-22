@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { User } from 'src/auth/user.entity';
 import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -8,20 +8,29 @@ import { Task } from './task.entity';
 
 @EntityRepository(Task)
 export class TasksRepository extends Repository<Task> {
-  private readonly logger = new Logger(TasksRepository.name);
+  private readonly logger = new Logger(TasksRepository.name, true);
 
   async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     const { title, description } = createTaskDto;
 
-    const task = this.create({
-      title: title,
-      description: description,
-      status: TaskStatus.OPEN,
-      user,
-    });
+    let task: Task;
 
-    await this.save(task);
+    try {
+      task = this.create({
+        title: title,
+        description: description,
+        status: TaskStatus.OPEN,
+        user,
+      });
 
+      await this.save(task);
+    } catch (error) {
+      this.logger.error(
+        `Error creating task "${JSON.stringify(createTaskDto)}"`,
+        error.stack,
+      );
+      throw new InternalServerErrorException();
+    }
     return task;
   }
 
