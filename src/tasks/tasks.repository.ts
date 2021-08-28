@@ -35,8 +35,6 @@ export class TasksRepository extends Repository<Task> {
   }
 
   async getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
-    this.logger.log('getTasks');
-
     const { status, search } = filterDto;
 
     // eslint-disable-next-line prettier/prettier
