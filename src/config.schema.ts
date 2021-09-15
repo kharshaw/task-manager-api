@@ -1,5 +1,4 @@
 import * as Joi from '@hapi/joi';
-import { empty } from 'rxjs';
 
 export const configValidationSchema = Joi.object({
   ENVIRONMENT: Joi.string().required(),
