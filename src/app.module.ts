@@ -15,7 +15,13 @@ import { configValidationSchema } from './config.schema';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
+        const isProduction = configService.get('ENVIRONMENT') === 'prod';
+
         return {
+          ssl: isProduction,
+          extra: {
+            ssl: isProduction ? { rejectionUnauthorized: false } : null,
+          },
           type: 'postgres',
           host: configService.get('DB_HOST', 'localhost'),
           port: configService.get('DB_PORT', 5432),
@@ -27,16 +33,6 @@ import { configValidationSchema } from './config.schema';
         };
       },
     }),
-    // TypeOrmModule.forRoot({
-    //   type: 'postgres',
-    //   host: 'localhost',
-    //   port: 5432,
-    //   username: 'postgres',
-    //   password: 'postgres',
-    //   database: 'task-management',
-    //   autoLoadEntities: true,
-    //   synchronize: true,
-    // }),
     AuthModule,
   ],
 })
