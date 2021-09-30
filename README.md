@@ -110,7 +110,7 @@ The update initialization looks like:
         return {
           ssl: isProduction,
           extra: {
-            ssl: isProduction ? { rejectionUnauthorized: false } : null,
+            ssl: isProduction ? { rejectUnauthorized: false } : null,
           },
           type: 'postgres',
           host: configService.get('DB_HOST', 'localhost'),

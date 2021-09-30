@@ -20,7 +20,7 @@ import { configValidationSchema } from './config.schema';
         return {
           ssl: isProduction,
           extra: {
-            ssl: isProduction ? { rejectionUnauthorized: false } : null,
+            ssl: isProduction ? { rejectUnauthorized: false } : null,
           },
           type: 'postgres',
           host: configService.get('DB_HOST', 'localhost'),
